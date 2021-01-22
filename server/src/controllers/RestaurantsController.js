@@ -115,8 +115,10 @@ module.exports = {
         .update({ name, location, price_range })
         .where({ id: restaurantId })
         .returning(['id', 'name', 'location', 'price_range']);
-
-      console.log(restaurant);
+      
+      if (!restaurant) {
+        return res.status(404).json({ erro: 'Usuário não encontrado' });
+      }
 
       return res.json({
         status: 'success',
@@ -130,7 +132,25 @@ module.exports = {
     }
   },
 
-  delete(req, res) {
-    res.sendStatus(204);
+  async delete(req, res) {
+    try {
+      const restaurantId = req.params.id;
+
+      if (!Number(restaurantId)) {
+        return res.sendStatus(404);
+      }      
+
+      const restaurant = await knex('restaurants')
+        .del()
+        .where({ id: restaurantId });
+
+      if (!restaurant) {
+        return res.status(404).json({ erro: 'Usuário não encontrado' });
+      }
+      
+      return res.sendStatus(204);
+    } catch (error) {
+      return res.sendStatus(500);
+    }
   }
 };
