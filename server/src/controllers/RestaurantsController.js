@@ -1,11 +1,19 @@
+const knex = require('../database');
+
 module.exports = {
-  index(req, res) {
-    res.json({
-      status: 'succes',
-      data: {
-        restaurants: ['mcdonalds', 'wendys'],
-      },
-    });
+  async index(req, res) {
+    try {
+      const restaurants = await knex('restaurants');
+      return res.json({
+        status: "success",
+        results: restaurants.length,
+        data: {
+          restaurants
+        }
+      });
+    } catch (error) {
+      return res.sendStatus(500);
+    }
   },
 
   show(req, res) {
