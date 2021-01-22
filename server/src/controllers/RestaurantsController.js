@@ -41,14 +41,47 @@ module.exports = {
         data: {
           restaurant
         }
-      })
+      });
     } catch (error) {
       return res.sendStatus(500);      
     }
   },
 
-  create(req, res) {
-    res.sendStatus(201);
+  async create(req, res) {
+    try {
+      const { name, location, price_range } = req.body;
+      const errors = [];
+
+      if (!name) {
+        errors.push('Nome do restaurante não informado');
+      }
+      if (!location) {
+        errors.push('Localização do restaurante não informada');
+      }
+      if (!price_range) {
+        errors.push('Faixa de preço do restaurante não informada');
+      }
+      if (price_range < 1 || price_range > 5) {
+        errors.push('A faixa de preço deve ser um valor maior ou ' + 
+          'igual a 1 e menor ou igual a 5');
+      }
+      if (errors.length > 0) {
+        res.status(400).json({ erros: errors });
+      }
+
+      const [restaurant] = await knex('restaurants')
+        .insert({ name, location, price_range })
+        .returning(['id', 'name', 'location', 'price_range']);
+      
+      return res.status(201).json({
+        status: 'success',
+        data: {
+          restaurant
+        }
+      });
+    } catch (error) {
+      return res.sendStatus(500);
+    }
   },
 
   update(req, res) {
