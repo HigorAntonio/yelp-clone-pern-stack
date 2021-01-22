@@ -84,13 +84,50 @@ module.exports = {
     }
   },
 
-  update(req, res) {
-    res.json({
-      status: 'success',
-      data: {
-        restaurant: 'mcdonalds'
+  async update(req, res) {
+    try {
+      const restaurantId = req.params.id;
+      const { name, location, price_range } = req.body;
+      const errors = [];
+      
+      if (!Number(restaurantId)) {
+        return res.sendStatus(404);
       }
-    });
+
+      if (!name) {
+        errors.push('Nome do restaurante não informado');
+      }
+      if (!location) {
+        errors.push('Localização do restaurante não informada');
+      }
+      if (!price_range) {
+        errors.push('Faixa de preço do restaurante não informada');
+      }
+      if (price_range < 1 || price_range > 5) {
+        errors.push('A faixa de preço deve ser um valor maior ou ' + 
+          'igual a 1 e menor ou igual a 5');
+      }
+      if (errors.length > 0) {
+        res.status(400).json({ erros: errors });
+      }
+
+      const [restaurant] = await knex('restaurants')
+        .update({ name, location, price_range })
+        .where({ id: restaurantId })
+        .returning(['id', 'name', 'location', 'price_range']);
+
+      console.log(restaurant);
+
+      return res.json({
+        status: 'success',
+        data: {
+          restaurant
+        }
+      });
+      
+    } catch (error) {
+      return res.sendStatus(500);
+    }
   },
 
   delete(req, res) {
