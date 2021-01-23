@@ -1,6 +1,20 @@
-import React from 'react'
+import React, { useEffect, useContext } from 'react';
+import restaurantFinder from '../apis/restaurantFinder';
+import { RestaurantsContext } from '../context/RestaurantsContext';
 
-const RestaurantList = () => {
+const RestaurantList = props => {
+  const { restaurants, setRestaurants } = useContext(RestaurantsContext);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await restaurantFinder.get('/');
+        setRestaurants(response.data.data.restaurants);
+      } catch (error) {}
+    }
+    fetchData();
+  }, [setRestaurants]);
+
   return (
     <div className='list-group'>
       <table className='table table-hover table-dark'>
@@ -15,15 +29,15 @@ const RestaurantList = () => {
           </tr>
         </thead>
         <tbody>
-            <tr>
-              <td>mc'donalds</td>
-              <td>Juiz de Fora</td>
-              <td>$$</td>
-              <td>Rating</td>
-              <td><button className='btn btn-warning'>Editar</button></td>
-              <td><button className='btn btn-danger'>Excluir</button></td>
-            </tr>
-          </tbody>
+          <tr>
+            <td>mc'donalds</td>
+            <td>Juiz de Fora</td>
+            <td>$$</td>
+            <td>Rating</td>
+            <td><button className='btn btn-warning'>Editar</button></td>
+            <td><button className='btn btn-danger'>Excluir</button></td>
+          </tr>
+        </tbody>
       </table>
     </div>
   )
