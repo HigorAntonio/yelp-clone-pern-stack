@@ -1,3 +1,4 @@
 psql-usefull-commands.txt
 server/node_modules/
 server/.env
+client/node_modules/
