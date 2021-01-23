@@ -29,14 +29,16 @@ const RestaurantList = props => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>mc'donalds</td>
-            <td>Juiz de Fora</td>
-            <td>$$</td>
-            <td>Rating</td>
-            <td><button className='btn btn-warning'>Editar</button></td>
-            <td><button className='btn btn-danger'>Excluir</button></td>
-          </tr>
+          {restaurants && restaurants.map(restaurant => 
+            <tr key={restaurant.id}>
+              <td>{restaurant.name}</td>
+              <td>{restaurant.location}</td>
+              <td>{'$'.repeat(restaurant.price_range)}</td>
+              <td>Rating</td>
+              <td><button className='btn btn-warning'>Editar</button></td>
+              <td><button className='btn btn-danger'>Excluir</button></td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
