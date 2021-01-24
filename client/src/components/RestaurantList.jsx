@@ -10,10 +10,23 @@ const RestaurantList = props => {
       try {
         const response = await restaurantFinder.get('/');
         setRestaurants(response.data.data.restaurants);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     }
     fetchData();
   }, [setRestaurants]);
+
+  const handleDelete = async id => {
+    try {
+      await restaurantFinder.delete(`/${id}`);
+      setRestaurants(prevState => prevState.filter(
+        restaurant => restaurant.id !== id
+      ));
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div className='list-group'>
@@ -36,7 +49,7 @@ const RestaurantList = props => {
               <td>{'$'.repeat(restaurant.price_range)}</td>
               <td>Rating</td>
               <td><button className='btn btn-warning'>Editar</button></td>
-              <td><button className='btn btn-danger'>Excluir</button></td>
+              <td><button className='btn btn-danger' onClick={() => handleDelete(restaurant.id)}>Excluir</button></td>
             </tr>
           )}
         </tbody>
