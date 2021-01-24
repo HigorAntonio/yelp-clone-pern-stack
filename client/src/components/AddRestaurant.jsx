@@ -1,18 +1,77 @@
-import React from 'react'
+import React, { useState, useContext } from 'react';
+import { RestaurantsContext } from '../context/RestaurantsContext';
+import restaurantFinder from '../apis/restaurantFinder';
+import FormErrorMessage from './FormErrorMessage';
 
 const AddRestaurant = () => {
+  const { addRestaurants } = useContext(RestaurantsContext);
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+  const [priceRange, setPriceRange] = useState('Faixa de Preço');
+  const [validationErrors, setValidationErrors] = useState([]);
+  
+  const handleSubmit = async e => {
+    e.preventDefault();
+    try {
+      let validated = true;
+      setValidationErrors([]);
+      if (!name) {
+        validated = false;
+        setValidationErrors(prevState => 
+          [...prevState, { id: 1, msg: 'Forneça um nome válido.' }]
+        );
+      }
+      if (!location) {
+        validated = false;
+        setValidationErrors(prevState => 
+          [...prevState, { id: 2, msg: 'Forneça uma localização válida.' }]
+        );
+      }
+      if (priceRange === 'Faixa de Preço') {
+        validated = false;
+        setValidationErrors(prevState => 
+          [...prevState, { id: 3, msg: 'Selecione uma faixa de preço.' }]
+        );
+      }
+      if (validated) {
+        const response = await restaurantFinder.post('/', {
+          name,
+          location,
+          price_range: priceRange
+        });
+        addRestaurants(response.data.data.restaurant);
+        setName('');
+        setLocation('');
+        setPriceRange('Faixa de Preço');
+      }
+    } catch (error) {}
+  }
+  
   return (
     <div className='mb-4'>
       <form action=''>
-        <div className='form-row'>
+        <div className='form-row mb-2'>
           <div className='col'>
-            <input type='text' className='form-control my-1' placeholder='nome'/>
+            <input className='form-control my-1' 
+              type='text' 
+              value={name}  
+              onChange={e => setName(e.target.value)}
+              placeholder='nome'
+            />
           </div>
           <div className='col'>
-            <input type='text' className='form-control my-1' placeholder='localização'/>
+            <input className='form-control my-1' 
+              type='text' 
+              value={location}
+              onChange={e => setLocation(e.target.value)}
+              placeholder='localização'
+            />
           </div>
           <div className='col'>
-            <select className='custom-select my-1 mr-sm-2'>
+            <select className='custom-select my-1 mr-sm-2'
+              value={priceRange}
+              onChange={e => setPriceRange(e.target.value)}
+            >
               <option disabled>Faixa de Preço</option>
               <option value='1'>$</option>
               <option value='2'>$$</option>
@@ -21,8 +80,19 @@ const AddRestaurant = () => {
               <option value='5'>$$$$$</option>
             </select>
           </div>
-          <button className='btn btn-primary my-1'>Add</button>
+          <button className='btn btn-primary my-1'
+            type='submit'
+            onClick={(e) => handleSubmit(e)}
+          >
+            Add
+          </button>
         </div>
+        {
+          validationErrors.length > 0 && 
+          validationErrors.map(error => 
+            <FormErrorMessage key={error.id}>{error.msg}</FormErrorMessage>
+          )
+        }
       </form>
     </div>
   )
