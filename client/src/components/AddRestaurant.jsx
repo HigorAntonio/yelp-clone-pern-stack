@@ -10,10 +10,8 @@ const AddRestaurant = () => {
   const [priceRange, setPriceRange] = useState('Faixa de Preço');
   const [validationErrors, setValidationErrors] = useState([]);
   
-  const handleSubmit = async e => {
-    e.preventDefault();
-    try {
-      let validated = true;
+  const formValidation = () => {
+    let validated = true;
       setValidationErrors([]);
       if (!name) {
         validated = false;
@@ -33,7 +31,13 @@ const AddRestaurant = () => {
           [...prevState, { id: 3, msg: 'Selecione uma faixa de preço.' }]
         );
       }
-      if (validated) {
+      return validated;
+  }
+  
+  const handleSubmit = async e => {
+    e.preventDefault();
+    try {
+      if (formValidation()) {
         const response = await restaurantFinder.post('/', {
           name,
           location,
@@ -45,6 +49,14 @@ const AddRestaurant = () => {
         setPriceRange('Faixa de Preço');
       }
     } catch (error) {}
+  }
+
+  const dismissErrorMessage = (error) => {
+    setValidationErrors(prevState => 
+      prevState.filter(e => 
+        e.id !== error.id  
+      )
+    );
   }
   
   return (
@@ -90,7 +102,11 @@ const AddRestaurant = () => {
         {
           validationErrors.length > 0 && 
           validationErrors.map(error => 
-            <FormErrorMessage key={error.id}>{error.msg}</FormErrorMessage>
+            <FormErrorMessage key={error.id} 
+              dismiss={() => dismissErrorMessage(error)} 
+            >
+              {error.msg}
+            </FormErrorMessage>
           )
         }
       </form>
