@@ -5,7 +5,8 @@ module.exports = {
   async index(req, res) {
     try {
       const restaurants = await knex('restaurants')
-        .select('id', 'name', 'location', 'price_range');
+        .select('id', 'name', 'location', 'price_range')
+        .orderBy('name');
       
         return res.json({
         status: 'success',
