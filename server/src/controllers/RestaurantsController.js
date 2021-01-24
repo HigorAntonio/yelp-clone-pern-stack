@@ -34,13 +34,18 @@ module.exports = {
         .first();
 
       if (!restaurant) {
-        return res.status(404).json({ erro: 'Usuário não encontrado' });
+        return res.status(404).json({ erro: 'Restaurante não encontrado' });
       }
+
+      const reviews = await knex('reviews')
+        .select('id', 'name', 'review', 'rating')
+        .where({ restaurant_id: restaurant.id });
       
       return res.json({
         status: 'success',
         data: {
-          restaurant
+          restaurant,
+          reviews
         }
       });
     } catch (error) {
@@ -118,7 +123,7 @@ module.exports = {
         .returning(['id', 'name', 'location', 'price_range']);
       
       if (!restaurant) {
-        return res.status(404).json({ erro: 'Usuário não encontrado' });
+        return res.status(404).json({ erro: 'Restaurante não encontrado' });
       }
 
       return res.json({
@@ -146,7 +151,7 @@ module.exports = {
         .where({ id: restaurantId });
 
       if (!restaurant) {
-        return res.status(404).json({ erro: 'Usuário não encontrado' });
+        return res.status(404).json({ erro: 'Restaurante não encontrado' });
       }
       
       return res.sendStatus(204);
