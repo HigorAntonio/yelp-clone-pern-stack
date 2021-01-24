@@ -48,7 +48,9 @@ const AddRestaurant = () => {
         setLocation('');
         setPriceRange('Faixa de Preço');
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const dismissErrorMessage = (error) => {
@@ -80,7 +82,7 @@ const AddRestaurant = () => {
             />
           </div>
           <div className='col'>
-            <select className='custom-select my-1 mr-sm-2'
+            <select className='form-control my-1 mr-sm-2'
               value={priceRange}
               onChange={e => setPriceRange(e.target.value)}
             >
@@ -94,7 +96,7 @@ const AddRestaurant = () => {
           </div>
           <button className='btn btn-primary my-1'
             type='submit'
-            onClick={(e) => handleSubmit(e)}
+            onClick={e => handleSubmit(e)}
           >
             Add
           </button>
