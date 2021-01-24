@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import restaurantFinder from '../apis/restaurantFinder';
+import Reviews from '../components/Reviews';
 import { RestaurantsContext } from '../context/RestaurantsContext';
 
 const RestaurantDetailPage = () => {
@@ -21,7 +22,14 @@ const RestaurantDetailPage = () => {
 
   return (
     <div>
-      {selectedRestaurant && selectedRestaurant.name}
+      {selectedRestaurant && (
+      <>
+        <h1 className='text-center display-2 font-weight-light'>{selectedRestaurant.name}</h1>
+        <div className='mt-3'>
+          <Reviews />
+        </div>
+      </>
+      )}
     </div>
   )
 }
