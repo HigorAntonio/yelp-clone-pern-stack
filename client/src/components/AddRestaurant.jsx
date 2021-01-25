@@ -98,7 +98,7 @@ const AddRestaurant = () => {
             type='submit'
             onClick={e => handleSubmit(e)}
           >
-            Add
+            Adicionar
           </button>
         </div>
         {
