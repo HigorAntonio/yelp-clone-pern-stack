@@ -46,10 +46,19 @@ const AddReview = () => {
           review: reviewText
         });
 
-        setSelectedRestaurant(prevState => ({
-          restaurant: prevState.restaurant,
-          reviews: [...prevState.reviews, response.data.data.review]
-        }));
+        setSelectedRestaurant(prevState => {
+          return {
+            restaurant: {
+              ...prevState.restaurant,
+              count: parseInt(prevState.restaurant.count) + 1,
+              'average_rating': [...prevState.reviews, response.data.data.review]
+                .map(review => review.rating)
+                .reduce((sum, current) => sum + current) / 
+                (parseInt(prevState.restaurant.count) + 1)
+            },
+            reviews: [...prevState.reviews, response.data.data.review]
+          }
+        });
 
         setName('');
         setRating('Nota');

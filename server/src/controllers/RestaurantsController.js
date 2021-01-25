@@ -3,15 +3,21 @@ const knex = require('../database');
 module.exports = {
   async index(req, res) {
     try {
-      const restaurants = await knex('restaurants')
-        .select('id', 'name', 'location', 'price_range')
-        .orderBy('name');
-      
-        return res.json({
+      const restaurantsRatings = await knex
+        .select('restaurants.id', 'restaurants.name', 'location', 'price_range')
+        .from('restaurants')
+        .leftJoin('reviews', 'restaurants.id', 'reviews.restaurant_id')
+        .count('reviews.id')
+        // .avg('reviews.rating as average_rating')
+        .select(knex.raw('ROUND(AVG(reviews.rating),2) AS average_rating'))
+        .groupBy('restaurants.id')
+        .orderBy('restaurants.name');
+
+      return res.json({
         status: 'success',
-        results: restaurants.length,
+        results: restaurantsRatings.length,
         data: {
-          restaurants
+          restaurants: restaurantsRatings
         }
       });
     } catch (error) {
@@ -27,9 +33,15 @@ module.exports = {
         return res.sendStatus(404);
       }
 
-      const restaurant = await knex('restaurants')
-        .select('id', 'name', 'location', 'price_range')
-        .where({ id: restaurantId })
+      const restaurant = await knex
+        .select('restaurants.id', 'restaurants.name', 'location', 'price_range')
+        .from('restaurants')
+        .leftJoin('reviews', 'restaurants.id', 'reviews.restaurant_id')
+        .count('reviews.id')
+        // .avg('reviews.rating as average_rating')
+        .select(knex.raw('ROUND(AVG(reviews.rating),2) AS average_rating'))
+        .groupBy('restaurants.id')
+        .where({ 'restaurants.id': restaurantId })
         .first();
 
       if (!restaurant) {
