@@ -1,4 +1,3 @@
-const { restart } = require('nodemon');
 const knex = require('../database');
 
 module.exports = {
@@ -67,12 +66,12 @@ module.exports = {
       if (!price_range) {
         errors.push('Faixa de preço do restaurante não informada');
       }
-      if (price_range < 1 || price_range > 5) {
-        errors.push('A faixa de preço deve ser um valor maior ou ' + 
+      if (!Number(price_range) || price_range < 1 || price_range > 5) {
+        errors.push('A faixa de preço deve ser um número maior ou ' + 
           'igual a 1 e menor ou igual a 5');
       }
       if (errors.length > 0) {
-        res.status(400).json({ erros: errors });
+        return res.status(400).json({ erros: errors });
       }
 
       const [restaurant] = await knex('restaurants')
@@ -109,12 +108,12 @@ module.exports = {
       if (!price_range) {
         errors.push('Faixa de preço do restaurante não informada');
       }
-      if (price_range < 1 || price_range > 5) {
-        errors.push('A faixa de preço deve ser um valor maior ou ' + 
+      if (!Number(price_range) || price_range < 1 || price_range > 5) {
+        errors.push('A faixa de preço deve ser um número maior ou ' + 
           'igual a 1 e menor ou igual a 5');
       }
       if (errors.length > 0) {
-        res.status(400).json({ erros: errors });
+        return res.status(400).json({ erros: errors });
       }
 
       const [restaurant] = await knex('restaurants')
