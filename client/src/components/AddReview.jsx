@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import restaurantFinder from '../apis/restaurantFinder';
+import { RestaurantsContext } from '../context/RestaurantsContext';
 import FormErrorMessage from './FormErrorMessage';
 
 const AddReview = () => {
+  const { id } = useParams();
   const [name, setName] = useState('');
   const [rating, setRating] = useState('Nota');
   const [reviewText, setReviewText] = useState('');
   const [validationErrors, setValidationErrors] = useState([]);
+  const { setSelectedRestaurant } = useContext(RestaurantsContext);
 
   const formValidation = () => {
     let validated = true;
@@ -33,8 +38,25 @@ const AddReview = () => {
   
   const handleSubmit = async e => {
     e.preventDefault();
-    if (formValidation()) {
-      console.log({ name, rating, reviewText });
+    try {
+      if (formValidation()) {
+        const response = await restaurantFinder.post(`/${id}/addReview`, {
+          name,
+          rating,
+          review: reviewText
+        });
+
+        setSelectedRestaurant(prevState => ({
+          restaurant: prevState.restaurant,
+          reviews: [...prevState.reviews, response.data.data.review]
+        }));
+
+        setName('');
+        setRating('Nota');
+        setReviewText('')
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
